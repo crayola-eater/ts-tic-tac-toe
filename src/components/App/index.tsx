@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import "tailwindcss/tailwind.css";
 import useTicTacToe from "../../hooks/useTicTacToe";
+import Board from "../Board";
 
 const App: React.VFC = () => {
   const ticTacToe = useTicTacToe();
@@ -11,37 +12,6 @@ const App: React.VFC = () => {
       { icon: "☠️", name: "Todd" },
     ].forEach(ticTacToe.playersManager.addPlayer);
   }, [ticTacToe.playersManager.addPlayer]);
-
-  const board = (
-    <div className="grid grid-cols-3 gap-1 h-96 w-96">
-      {ticTacToe.boardManager.board.map((square) => {
-        return (
-          <button
-            key={square.position}
-            className={`shadow shadow-inner rounded flex flex-col justify-center items-center border border-red-500 border-solid text-xl ${
-              square.isWinning ? "bg-yellow-500" : ""
-            }
-            ${
-              ticTacToe.gameManager.gameHasFinished && !square.isWinning
-                ? "bg-gray-400 opacity-40"
-                : ""
-            }`}
-            onClick={() => {
-              ticTacToe.handlers.handleMove(
-                square.position,
-                ticTacToe.playersManager.currentPlayer
-              );
-            }}
-            disabled={ticTacToe.gameManager.gameHasFinished}
-          >
-            <span className={square.isWinning ? "animate-bounce" : undefined}>
-              {square.occupiedBy}
-            </span>
-          </button>
-        );
-      })}
-    </div>
-  );
 
   const gameStatus = (
     <div>
@@ -66,7 +36,12 @@ const App: React.VFC = () => {
   return (
     <div className="flex flex-col justify-center items-center h-screen w-screen">
       {gameStatus}
-      {board}
+      <Board
+        board={ticTacToe.boardManager.board}
+        currentPlayer={ticTacToe.playersManager.currentPlayer}
+        gameHasFinished={ticTacToe.gameManager.gameHasFinished}
+        handleMove={ticTacToe.handlers.handleMove}
+      />
     </div>
   );
 };
