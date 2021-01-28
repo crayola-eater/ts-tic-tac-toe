@@ -1,6 +1,6 @@
 import React from "react";
 import { BoardProps } from "../../types/Board";
-import BoardSquare from "../BoardSquare/BoardSquare";
+import BoardSquare from "../BoardSquare";
 
 const Board: React.FC<BoardProps> = ({
   board,

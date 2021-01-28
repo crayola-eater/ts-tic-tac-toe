@@ -1,7 +1,8 @@
 import { BoardSquare } from "./useBoardManager";
+import { TicTacToe } from "./useTicTacToe";
 
 export interface BoardSquareProps {
   square: BoardSquare;
   handleClick: () => void;
-  gameHasFinished: boolean;
+  gameHasFinished: TicTacToe["gameManager"]["gameHasFinished"];
 }
