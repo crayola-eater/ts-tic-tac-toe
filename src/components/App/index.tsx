@@ -18,7 +18,7 @@ const App: React.VFC = () => {
   }
 
   return (
-    <div className="flex flex-col justify-center items-center h-screen w-screen">
+    <div className="flex flex-col justify-center items-center h-screen w-screen space-y-3">
       <Status
         currentPlayer={ticTacToe.playersManager.currentPlayer}
         gameHasFinished={ticTacToe.gameManager.gameHasFinished}
