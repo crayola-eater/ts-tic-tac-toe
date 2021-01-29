@@ -13,7 +13,7 @@ const Status: React.FC<StatusProps> = ({
       ? `Game over, ${winner.name} (${winner.icon}) wins!`
       : "Game over, nobody won!";
   } else if (currentPlayer) {
-    statusMessage = `Waiting for ${currentPlayer.name} (${currentPlayer.icon}) to move...`;
+    statusMessage = `Waiting for ${currentPlayer.name} (${currentPlayer.icon})...`;
   } else {
     statusMessage = "Getting ready, just a moment...";
   }
@@ -23,7 +23,7 @@ const Status: React.FC<StatusProps> = ({
       className={clsx(
         "flex flex-col items-center justify-center",
         "w-48 sm:w-72 md:w-96",
-        "bg-gray-300",
+        "bg-gray-200",
         "rounded-lg"
       )}
     >
