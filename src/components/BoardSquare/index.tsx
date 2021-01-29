@@ -13,10 +13,10 @@ const BoardSquare: React.FC<BoardSquareProps> = ({
     "flex flex-col justify-center items-center",
     "border border-gray-500 border-solid",
     "transition-colors duration-200 ease-linear",
-    { ["hover:bg-gray-300"]: !gameHasFinished },
-    { ["bg-gray-300"]: square.isOccupied },
+    { ["hover:bg-gray-200"]: !gameHasFinished },
+    { ["bg-gray-200"]: square.isOccupied },
     { ["bg-yellow-500"]: square.isWinning },
-    { ["bg-gray-400 opacity-40"]: gameHasFinished && !square.isWinning }
+    { ["bg-gray-200 opacity-40"]: gameHasFinished && !square.isWinning }
   );
 
   return (

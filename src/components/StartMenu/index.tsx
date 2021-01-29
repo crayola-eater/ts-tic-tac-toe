@@ -30,11 +30,11 @@ const StartMenu: React.FC<StartMenuProps> = ({ handleStart }) => {
 
   return (
     <>
-      <h1 className="text-center text-3xl p-2 my-2 tracking-wider">
+      <h1 className="text-center text-3xl p-2 tracking-wider">
         Select your icon!
       </h1>
       <form
-        className="flex flex-col justify-center items-center space-y-3 w-max sm:w-96 tracking-wider"
+        className="flex flex-col justify-center items-center space-y-3 w-11/12 sm:w-96 tracking-wider"
         onSubmit={handleSubmit(handleStart)}
       >
         {Array.from({ length: 2 }, (_, i) => {
