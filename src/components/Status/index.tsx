@@ -21,8 +21,8 @@ const Status: React.FC<StatusProps> = ({
   return (
     <div
       className={clsx(
+        "w-full",
         "flex flex-col items-center justify-center",
-        "w-48 sm:w-72 md:w-96",
         "bg-gray-200",
         "rounded-lg"
       )}
