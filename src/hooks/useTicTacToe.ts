@@ -64,6 +64,11 @@ const useTicTacToe: UseTicTacToe = () => {
     [playersManager.addPlayer, gameManager.setGameAsStarted]
   );
 
+  const handleRestart = useCallback(() => {
+    boardManager.resetBoard();
+    gameManager.resetGame();
+  }, [boardManager.resetBoard]);
+
   /**
    * Check if there's a tie.
    */
@@ -112,6 +117,13 @@ const useTicTacToe: UseTicTacToe = () => {
     playersManager.players,
   ]);
 
+  useEffect(() => {
+    if (gameManager.gameHasFinished) {
+      const timeoutId = setTimeout(handleRestart, 2000);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [handleRestart, gameManager.gameHasFinished]);
+
   return {
     boardManager,
     playersManager,
@@ -119,6 +131,7 @@ const useTicTacToe: UseTicTacToe = () => {
     handlers: {
       handleMove,
       handleStart,
+      handleRestart,
     },
   };
 };

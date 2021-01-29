@@ -7,6 +7,7 @@ export interface GameManager {
   setGameAsStarted: () => void;
   setGameAsFinished: () => void;
   setGameWinner: (winner: Player) => void;
+  resetGame: () => void;
 }
 
 export type UseGameManager = () => GameManager;
