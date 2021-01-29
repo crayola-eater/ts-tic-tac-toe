@@ -10,6 +10,7 @@ export interface TicTacToe {
   handlers: {
     handleMove: (index: number, player: Player) => void;
     handleStart: (data: StartMenuFormData) => void;
+    handleRestart: () => void;
   };
 }
 

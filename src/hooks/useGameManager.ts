@@ -22,6 +22,12 @@ const useGameManager: UseGameManager = () => {
     [setWinner]
   );
 
+  const resetGame = useCallback<GameManager["resetGame"]>(() => {
+    setStarted(true);
+    setFinished(false);
+    setWinner(null);
+  }, []);
+
   return {
     gameHasStarted: started,
     gameHasFinished: finished,
@@ -29,6 +35,7 @@ const useGameManager: UseGameManager = () => {
     setGameAsStarted,
     setGameAsFinished,
     setGameWinner,
+    resetGame,
   };
 };
 

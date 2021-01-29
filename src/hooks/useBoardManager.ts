@@ -52,10 +52,15 @@ const useBoardManager: UseBoardManager = () => {
     []
   );
 
+  const resetBoard = useCallback<BoardManager["resetBoard"]>(() => {
+    setBoard(initialBoard);
+  }, [setBoard]);
+
   return {
     board,
     setSquareAsOccupied,
     setSquaresAsWinning,
+    resetBoard,
   };
 };
 

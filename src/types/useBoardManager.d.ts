@@ -11,6 +11,7 @@ export interface BoardManager {
   board: BoardSquare[];
   setSquareAsOccupied: (index: number, player: Player) => void;
   setSquaresAsWinning: (indexes: number[][]) => void;
+  resetBoard: () => void;
 }
 
 export type UseBoardManager = () => BoardManager;
