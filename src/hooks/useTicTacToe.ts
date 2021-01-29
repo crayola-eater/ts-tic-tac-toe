@@ -52,11 +52,23 @@ const useTicTacToe: UseTicTacToe = () => {
     [boardManager, gameManager]
   );
 
+  const handleStart = useCallback<TicTacToe["handlers"]["handleStart"]>(
+    (data) => {
+      const playersData = [
+        { icon: data.player1Icon, name: data.player1Name },
+        { icon: data.player2Icon, name: data.player2Name },
+      ];
+      playersData.forEach(playersManager.addPlayer);
+      gameManager.setGameAsStarted();
+    },
+    [playersManager.addPlayer, gameManager.setGameAsStarted]
+  );
+
   /**
    * Check if there's a tie.
    */
   useEffect(() => {
-    if (gameManager.gameHasFinished) {
+    if (!gameManager.gameHasStarted || gameManager.gameHasFinished) {
       return;
     }
     if (boardManager.board.every((square) => square.isOccupied)) {
@@ -72,7 +84,7 @@ const useTicTacToe: UseTicTacToe = () => {
    * Check if there's a win.
    */
   useEffect(() => {
-    if (gameManager.gameHasFinished) {
+    if (!gameManager.gameHasStarted || gameManager.gameHasFinished) {
       return;
     }
 
@@ -106,6 +118,7 @@ const useTicTacToe: UseTicTacToe = () => {
     gameManager,
     handlers: {
       handleMove,
+      handleStart,
     },
   };
 };
