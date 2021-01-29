@@ -57,7 +57,17 @@ const useTicTacToe: UseTicTacToe = () => {
       const playersData = [
         { icon: data.player1Icon, name: data.player1Name },
         { icon: data.player2Icon, name: data.player2Name },
-      ];
+      ].map((player, i) => {
+        /**
+         * TODO: The responsibility for adding score and index should be usePlayersManager's,
+         * not the caller's.
+         */
+        return {
+          ...player,
+          score: 0,
+          index: playersManager.players.length + i,
+        };
+      });
       playersData.forEach(playersManager.addPlayer);
       gameManager.setGameAsStarted();
     },
@@ -108,15 +118,18 @@ const useTicTacToe: UseTicTacToe = () => {
     gameManager.setGameAsFinished();
     gameManager.setGameWinner(winner);
     boardManager.setSquaresAsWinning(result.winningCombinations);
+    playersManager.incrementPlayerScore(winner.index);
   }, [
     gameManager.setGameAsFinished,
     gameManager.setGameWinner,
     boardManager.board,
     boardManager.setSquaresAsWinning,
     playersManager.setNextPlayer,
-    playersManager.players,
   ]);
 
+  /**
+   * Auto-restart the game when it has finished.
+   */
   useEffect(() => {
     if (gameManager.gameHasFinished) {
       const timeoutId = setTimeout(handleRestart, 2000);

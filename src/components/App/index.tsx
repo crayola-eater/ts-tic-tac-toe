@@ -2,6 +2,7 @@ import React from "react";
 import "tailwindcss/tailwind.css";
 import useTicTacToe from "../../hooks/useTicTacToe";
 import Board from "../Board";
+import Score from "../Score";
 import StartMenu from "../StartMenu";
 import Status from "../Status";
 
@@ -29,6 +30,7 @@ const App: React.VFC = () => {
         gameHasFinished={ticTacToe.gameManager.gameHasFinished}
         handleMove={ticTacToe.handlers.handleMove}
       />
+      <Score players={ticTacToe.playersManager.players} />
     </div>
   );
 };

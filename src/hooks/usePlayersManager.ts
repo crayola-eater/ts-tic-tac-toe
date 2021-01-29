@@ -19,12 +19,31 @@ const usePlayersManager: UsePlayersManager = () => {
     setCurrentPlayerIndex((prev) => (prev + 1) % players.length);
   }, [setCurrentPlayerIndex, players]);
 
+  const incrementPlayerScore = useCallback<
+    PlayersManager["incrementPlayerScore"]
+  >(
+    (playerIndex, increment = 1) => {
+      setPlayers((prev) => {
+        return [
+          ...prev.slice(0, playerIndex),
+          {
+            ...prev[playerIndex],
+            score: prev[playerIndex].score + increment,
+          },
+          ...prev.slice(playerIndex + 1),
+        ];
+      });
+    },
+    [setPlayers]
+  );
+
   return {
     players,
     currentPlayer: players[currentPlayerIndex],
     currentPlayerIndex,
     addPlayer,
     setNextPlayer,
+    incrementPlayerScore,
   };
 };
 
