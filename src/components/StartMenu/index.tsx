@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
+import React from "react";
+import { useForm } from "react-hook-form";
 import { StartMenuFormData, StartMenuProps } from "../../types/StartMenu";
 
 const allIcons = [
