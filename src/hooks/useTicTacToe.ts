@@ -6,7 +6,7 @@ import { TicTacToe, UseTicTacToe } from "../types/useTicTacToe";
 import useGameManager from "./useGameManager";
 import { BoardSquare } from "../types/useBoardManager";
 
-const calculateWinner = (squares: BoardSquare[]) => {
+const checkGameResult = (squares: BoardSquare[]) => {
   const combinationsToCheck = [
     [0, 1, 2],
     [3, 4, 5],
@@ -26,9 +26,20 @@ const calculateWinner = (squares: BoardSquare[]) => {
     );
   });
 
+  const gameHasBeenWon = winningCombinations.length > 0;
+  const gameHasBeenDrawn =
+    !gameHasBeenWon && squares.every((square) => square.isOccupied);
+  const gameHasNotEnded = !gameHasBeenWon && !gameHasBeenDrawn;
+
+  const indexOfWinningSquare = winningCombinations[0]?.[0];
+  const iconOfWinner = squares[indexOfWinningSquare]?.occupiedBy;
+
   return {
-    gameHasBeenWon: winningCombinations.length > 0,
+    gameHasBeenWon,
+    gameHasBeenDrawn,
+    gameHasNotEnded,
     winningCombinations,
+    iconOfWinner,
   };
 };
 
@@ -47,9 +58,15 @@ const useTicTacToe: UseTicTacToe = () => {
       if (squareClicked.isOccupied) {
         return;
       }
-      boardManager.setSquareAsOccupied(index, player);
+      boardManager.setSquareAsOccupied.call(undefined, index, player);
+      gameManager.incrementCurrentMoveIndex.call(undefined);
     },
-    [boardManager, gameManager]
+    [
+      boardManager.board,
+      boardManager.setSquareAsOccupied,
+      gameManager.gameHasFinished,
+      gameManager.incrementCurrentMoveIndex,
+    ]
   );
 
   const handleStart = useCallback<TicTacToe["handlers"]["handleStart"]>(
@@ -69,62 +86,66 @@ const useTicTacToe: UseTicTacToe = () => {
         };
       });
       playersData.forEach(playersManager.addPlayer);
-      gameManager.setGameAsStarted();
+      gameManager.setGameAsStarted.call(undefined);
     },
-    [playersManager.addPlayer, gameManager.setGameAsStarted]
+    [
+      playersManager.players.length,
+      playersManager.addPlayer,
+      gameManager.setGameAsStarted,
+    ]
   );
 
   const handleRestart = useCallback(() => {
-    boardManager.resetBoard();
-    gameManager.resetGame();
-  }, [boardManager.resetBoard]);
+    boardManager.resetBoard.call(undefined);
+    gameManager.resetGame.call(undefined);
+  }, [boardManager.resetBoard, gameManager.resetGame]);
 
   /**
-   * Check if there's a tie.
+   * After each move, check if game has been won/drawn or should continue.
    */
   useEffect(() => {
     if (!gameManager.gameHasStarted || gameManager.gameHasFinished) {
       return;
+    } else if (0 === gameManager.currentMoveIndex) {
+      return;
     }
-    if (boardManager.board.every((square) => square.isOccupied)) {
-      gameManager.setGameAsFinished();
+
+    const result = checkGameResult(boardManager.board);
+
+    if (result.gameHasNotEnded) {
+      playersManager.setNextPlayer.call(undefined);
+      return;
+    }
+
+    if (result.gameHasBeenDrawn) {
+      gameManager.setGameAsFinished.call(undefined);
+      return;
+    }
+
+    if (result.gameHasBeenWon) {
+      const winner = playersManager.players.find(
+        (player) => player.icon === result.iconOfWinner
+      )!;
+
+      gameManager.setGameAsFinished.call(undefined);
+      gameManager.setGameWinner.call(undefined, winner);
+      boardManager.setSquaresAsWinning.call(
+        undefined,
+        result.winningCombinations
+      );
+      playersManager.incrementPlayerScore.call(undefined, winner.index);
     }
   }, [
+    playersManager.players,
+    playersManager.incrementPlayerScore,
+    playersManager.setNextPlayer,
+    gameManager.gameHasStarted,
     gameManager.gameHasFinished,
-    gameManager.setGameAsFinished,
-    boardManager.board,
-  ]);
-
-  /**
-   * Check if there's a win.
-   */
-  useEffect(() => {
-    if (!gameManager.gameHasStarted || gameManager.gameHasFinished) {
-      return;
-    }
-
-    const result = calculateWinner(boardManager.board);
-    if (!result.gameHasBeenWon) {
-      playersManager.setNextPlayer();
-      return;
-    }
-
-    const indexOfWinningSquare = result.winningCombinations[0][0];
-    const iconOfWinner = boardManager.board[indexOfWinningSquare].occupiedBy;
-    const winner = playersManager.players.filter(
-      (player) => player.icon === iconOfWinner
-    )[0];
-
-    gameManager.setGameAsFinished();
-    gameManager.setGameWinner(winner);
-    boardManager.setSquaresAsWinning(result.winningCombinations);
-    playersManager.incrementPlayerScore(winner.index);
-  }, [
+    gameManager.currentMoveIndex,
     gameManager.setGameAsFinished,
     gameManager.setGameWinner,
     boardManager.board,
     boardManager.setSquaresAsWinning,
-    playersManager.setNextPlayer,
   ]);
 
   /**
