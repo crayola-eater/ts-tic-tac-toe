@@ -39,6 +39,7 @@
   - introduce type safety within a project
   - identify and fix type mismatches/bugs that can be caught during development
   - having a better, more productive developer experience (greater intellisense/autocomplete, IDE behaviour)
+- Practiced writing tests with Jest and React testing library to ensure components and hooks were behaving correctly
 - Practiced configuring Webpack for different environments (`dev`, `prod`).
 - Practiced setting up tooling (ESLint, Babel, Tailwind CSS, PostCSS) and loaders.
 - Used Tailwind CSS for the first time and found it to be an interesting tool that helped in creating a responsive design for this project.
