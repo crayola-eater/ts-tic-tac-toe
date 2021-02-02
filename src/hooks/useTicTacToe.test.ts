@@ -44,9 +44,11 @@ describe("useTicTacToe hook", () => {
         gameManager: expect.objectContaining<GameManager>({
           gameHasStarted: false,
           gameHasFinished: false,
+          currentMoveIndex: 0,
           winner: null,
           setGameAsStarted: expect.any(Function),
           setGameAsFinished: expect.any(Function),
+          incrementCurrentMoveIndex: expect.any(Function),
           setGameWinner: expect.any(Function),
           resetGame: expect.any(Function),
         }),
