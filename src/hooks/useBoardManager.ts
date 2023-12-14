@@ -1,60 +1,64 @@
-import { useCallback, useState } from "react";
-import { BoardManager, UseBoardManager } from "../types/useBoardManager";
+import { useCallback, useState } from 'react';
+import type { Player } from './usePlayersManager';
 
-const initialBoard: BoardManager["board"] = Array.from(
-  { length: 9 },
-  (_, i) => {
-    return {
-      position: i,
-      isOccupied: false,
-      occupiedBy: null,
-      isWinning: false,
-    };
-  }
-);
+export type BoardSquare = {
+  position: number;
+  isOccupied: boolean;
+  occupiedBy: string | null;
+  isWinning: boolean;
+};
+export type BoardManager = {
+  board: BoardSquare[];
+  setSquareAsOccupied: (index: number, player: Player) => void;
+  setSquaresAsWinning: (indexes: number[][]) => void;
+  resetBoard: () => void;
+};
+export type Board = BoardManager['board'];
+export type SetSquaresAsOccupied = BoardManager['setSquareAsOccupied'];
+export type SetSquaresAsWinning = BoardManager['setSquaresAsWinning'];
+export type ResetBoard = BoardManager['resetBoard'];
 
-const useBoardManager: UseBoardManager = () => {
-  const [board, setBoard] = useState<BoardManager["board"]>(initialBoard);
+const initialBoard: Board = Array.from({ length: 9 }, (_, i) => {
+  const square: BoardSquare = {
+    position: i,
+    isOccupied: false,
+    occupiedBy: null,
+    isWinning: false,
+  };
+  return square;
+});
 
-  const setSquareAsOccupied = useCallback<BoardManager["setSquareAsOccupied"]>(
-    (index, player) => {
-      setBoard((prev) => {
-        return [
-          ...prev.slice(0, index),
-          {
-            ...prev[index],
-            occupiedBy: player.icon,
-            isOccupied: true,
-          },
-          ...prev.slice(index + 1),
-        ];
-      });
-    },
-    []
-  );
+export default function useBoardManager(): BoardManager {
+  const [board, setBoard] = useState(initialBoard);
 
-  const setSquaresAsWinning = useCallback<BoardManager["setSquaresAsWinning"]>(
-    (indexes) => {
-      const indexesToSet = new Set(indexes.flat());
-      setBoard((prev) => {
-        return prev.map((square, i) => {
-          if (indexesToSet.has(i)) {
-            return {
+  const setSquareAsOccupied = useCallback<SetSquaresAsOccupied>((index, player) => {
+    setBoard((prev) => {
+      const updatedSquare: BoardSquare = {
+        ...prev[index],
+        occupiedBy: player.icon,
+        isOccupied: true,
+      };
+      return prev.with(index, updatedSquare);
+    });
+  }, []);
+
+  const setSquaresAsWinning = useCallback<SetSquaresAsWinning>((indexes) => {
+    const indexesToSet = new Set(indexes.flat());
+    setBoard((prev) => {
+      return prev.map((square, i) => {
+        return indexesToSet.has(i)
+          ? {
               ...square,
               isWinning: true,
-            };
-          }
-
-          return square;
-        });
+            }
+          : square;
       });
-    },
-    []
-  );
+    });
+  }, []);
 
-  const resetBoard = useCallback<BoardManager["resetBoard"]>(() => {
+  const resetBoard = useCallback<ResetBoard>(() => {
     setBoard(initialBoard);
-  }, [setBoard]);
+  }, []);
 
   return {
     board,
@@ -62,6 +66,4 @@ const useBoardManager: UseBoardManager = () => {
     setSquaresAsWinning,
     resetBoard,
   };
-};
-
-export default useBoardManager;
+}
