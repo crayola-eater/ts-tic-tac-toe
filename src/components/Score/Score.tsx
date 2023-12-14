@@ -1,16 +1,17 @@
-import React from "react";
-import { ScoreProps } from "../../types/Score";
+import { Player } from '../../hooks/usePlayersManager';
 
-const Score: React.FC<ScoreProps> = ({ players }) => {
+type ScoreProps = {
+  players: Player[];
+};
+
+export default function Score({ players }: ScoreProps) {
   if (0 === players?.length) {
     return null;
   }
 
   return (
     <div className="w-full shadow-md p-2 md:p-4 flex flex-col justify-center items-center bg-gray-200 rounded-lg space-y-2">
-      <h1 className="w-full text-sm sm:text-lg md:text-xl text-center tracking-widest">
-        Score
-      </h1>
+      <h1 className="w-full text-sm sm:text-lg md:text-xl text-center tracking-widest">Score</h1>
       <table className="w-full border-collapse text-center bg-white">
         <thead>
           <tr>
@@ -30,10 +31,7 @@ const Score: React.FC<ScoreProps> = ({ players }) => {
           <tr>
             {players.map((player) => {
               return (
-                <td
-                  key={player.index}
-                  className="border border-solid border-gray-400 text-md"
-                >
+                <td key={player.index} className="border border-solid border-gray-400 text-md">
                   {player.score}
                 </td>
               );
@@ -43,6 +41,4 @@ const Score: React.FC<ScoreProps> = ({ players }) => {
       </table>
     </div>
   );
-};
-
-export default Score;
+}
