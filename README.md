@@ -6,10 +6,9 @@
 
 # How to run
 
-- Install Node.js (if not already installed)
 - Clone this repo
-- `cd` into `ts-tic-tac-toe` directory and then `npm i`
-- `npm start` to run the game locally
+- For minimal setup, open repository with VS Code Dev Containers extension (requires Docker)
+- `npm dev` to run the game locally
 
 # Other commands
 
@@ -23,7 +22,7 @@
   - TypeScript
   - Tailwind CSS
 - Bundling
-  - Webpack
+  - Webpack originally (then changed to Vite later)
 - Testing
   - Jest
   - React testing library
