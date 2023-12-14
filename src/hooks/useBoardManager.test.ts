@@ -1,49 +1,32 @@
-import { renderHook, act } from "@testing-library/react-hooks";
-import { Player } from "../types/usePlayersManager";
-import useBoardManager from "./useBoardManager";
+import { describe, it, expect } from 'vitest';
+import { renderHook, act } from '@testing-library/react';
+import type { Player } from '../hooks/usePlayersManager';
+import useBoardManager from './useBoardManager';
 
-describe("useBoardManager hook", () => {
+describe('useBoardManager hook', () => {
   const player: Player = {
-    icon: "🧟",
+    icon: '🧟',
     index: 0,
-    name: "Arthur",
+    name: 'Arthur',
     score: 14,
   };
 
-  it("should have expose a valid interface", () => {
+  it('should have a valid initial state', () => {
     const rendered = renderHook(() => useBoardManager());
-    expect(rendered.result.current).toEqual(
-      expect.objectContaining({
-        board: expect.arrayContaining([
-          expect.objectContaining({
-            position: expect.any(Number),
-            isOccupied: false,
-            occupiedBy: null,
-            isWinning: false,
-          }),
-        ]),
-        setSquareAsOccupied: expect.any(Function),
-        setSquaresAsWinning: expect.any(Function),
-        resetBoard: expect.any(Function),
-      })
-    );
+
+    expect(rendered.result.current.board).to.be.an('array').that.is.not.empty;
+
+    for (const [i, square] of rendered.result.current.board.entries()) {
+      expect(square).to.deep.equal({
+        isOccupied: false,
+        isWinning: false,
+        occupiedBy: null,
+        position: i,
+      });
+    }
   });
 
-  it("should have a valid initial state", () => {
-    const rendered = renderHook(() => useBoardManager());
-    expect(
-      rendered.result.current.board.every((square, i) => {
-        return (
-          !square.isOccupied &&
-          !square.isWinning &&
-          null === square.occupiedBy &&
-          square.position === i
-        );
-      })
-    ).toBe(true);
-  });
-
-  it("should set a square as occupied", () => {
+  it('should set a square as occupied', () => {
     const rendered = renderHook(() => useBoardManager());
     const squareIndex = 0;
 
@@ -51,30 +34,32 @@ describe("useBoardManager hook", () => {
       rendered.result.current.setSquareAsOccupied(squareIndex, player);
     });
 
-    expect(
-      rendered.result.current.board.every((square, i) => {
-        const shouldHaveChanged = i === squareIndex;
+    const board = rendered.result.current.board;
 
-        if (shouldHaveChanged) {
-          return (
-            square.isOccupied &&
-            !square.isWinning &&
-            player.icon === square.occupiedBy &&
-            square.position === i
-          );
-        }
+    expect(board).to.be.an('array').that.is.not.empty;
 
-        return (
-          !square.isOccupied &&
-          !square.isWinning &&
-          null === square.occupiedBy &&
-          square.position === i
-        );
-      })
-    ).toBe(true);
+    expect(board[squareIndex]).to.deep.equal({
+      isOccupied: true,
+      isWinning: false,
+      occupiedBy: player.icon,
+      position: squareIndex,
+    });
+
+    for (const [i, square] of rendered.result.current.board.entries()) {
+      if (i == squareIndex) {
+        continue;
+      }
+
+      expect(square).to.deep.equal({
+        isOccupied: false,
+        isWinning: false,
+        occupiedBy: null,
+        position: i,
+      });
+    }
   });
 
-  it("should set squares as winning", () => {
+  it('should set squares as winning', () => {
     const rendered = renderHook(() => useBoardManager());
     const squareIndex = 1;
 
@@ -82,30 +67,32 @@ describe("useBoardManager hook", () => {
       rendered.result.current.setSquaresAsWinning([[squareIndex]]);
     });
 
-    expect(
-      rendered.result.current.board.every((square, i) => {
-        const shouldHaveChanged = i === squareIndex;
+    const board = rendered.result.current.board;
 
-        if (shouldHaveChanged) {
-          return (
-            !square.isOccupied &&
-            square.isWinning &&
-            null === square.occupiedBy &&
-            square.position === i
-          );
-        }
+    expect(board).to.be.an('array').that.is.not.empty;
 
-        return (
-          !square.isOccupied &&
-          !square.isWinning &&
-          null === square.occupiedBy &&
-          square.position === i
-        );
-      })
-    ).toBe(true);
+    expect(board[squareIndex]).to.deep.equal({
+      isOccupied: false,
+      isWinning: true,
+      occupiedBy: null,
+      position: squareIndex,
+    });
+
+    for (const [i, square] of rendered.result.current.board.entries()) {
+      if (i == squareIndex) {
+        continue;
+      }
+
+      expect(square).to.deep.equal({
+        isOccupied: false,
+        isWinning: false,
+        occupiedBy: null,
+        position: i,
+      });
+    }
   });
 
-  it("should reset all squares to their initial state", () => {
+  it('should reset all squares to their initial state', () => {
     const rendered = renderHook(() => useBoardManager());
     const squareIndexes = [1, 2, 5, 6];
 
@@ -117,41 +104,31 @@ describe("useBoardManager hook", () => {
       });
     });
 
-    expect(
-      rendered.result.current.board.every((square, i) => {
-        const shouldHaveChanged = squareIndexes.includes(i);
+    expect(rendered.result.current.board).to.be.an('array').that.is.not.empty;
 
-        if (shouldHaveChanged) {
-          return (
-            square.isOccupied &&
-            square.isWinning &&
-            square.occupiedBy === player.icon &&
-            square.position === i
-          );
-        }
-
-        return (
-          !square.isOccupied &&
-          !square.isWinning &&
-          null === square.occupiedBy &&
-          square.position === i
-        );
-      })
-    ).toBe(true);
+    for (const i of squareIndexes) {
+      const square = rendered.result.current.board[i];
+      expect(square).to.deep.equal({
+        isOccupied: true,
+        isWinning: true,
+        occupiedBy: player.icon,
+        position: i,
+      });
+    }
 
     act(() => {
       rendered.result.current.resetBoard();
     });
 
-    expect(
-      rendered.result.current.board.every((square, i) => {
-        return (
-          !square.isOccupied &&
-          !square.isWinning &&
-          null === square.occupiedBy &&
-          square.position === i
-        );
-      })
-    ).toBe(true);
+    expect(rendered.result.current.board).to.be.an('array').that.is.not.empty;
+
+    for (const [i, square] of rendered.result.current.board.entries()) {
+      expect(square).to.deep.equal({
+        isOccupied: false,
+        isWinning: false,
+        occupiedBy: null,
+        position: i,
+      });
+    }
   });
 });
