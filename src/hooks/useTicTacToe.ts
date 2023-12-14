@@ -1,12 +1,24 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect } from 'react';
+import usePlayersManager, { type Player, PlayersManager } from './usePlayersManager';
+import useBoardManager, { type BoardSquare, BoardManager } from './useBoardManager';
+import useGameManager, { type GameManager } from './useGameManager';
+import type { StartMenuFormData } from '../components/StartMenu/StartMenu';
 
-import usePlayersManager from "./usePlayersManager";
-import useBoardManager from "./useBoardManager";
-import { TicTacToe, UseTicTacToe } from "../types/useTicTacToe";
-import useGameManager from "./useGameManager";
-import { BoardSquare } from "../types/useBoardManager";
+export type TicTacToe = {
+  boardManager: BoardManager;
+  playersManager: PlayersManager;
+  gameManager: GameManager;
+  handlers: {
+    handleMove: (index: number, player: Player) => void;
+    handleStart: (data: StartMenuFormData) => void;
+    handleRestart: () => void;
+  };
+};
+export type HandleMove = TicTacToe['handlers']['handleMove'];
+export type HandleStart = TicTacToe['handlers']['handleStart'];
+export type handleRestart = TicTacToe['handlers']['handleRestart'];
 
-const checkGameResult = (squares: BoardSquare[]) => {
+function checkGameResult(squares: BoardSquare[]) {
   const combinationsToCheck = [
     [0, 1, 2],
     [3, 4, 5],
@@ -27,8 +39,7 @@ const checkGameResult = (squares: BoardSquare[]) => {
   });
 
   const gameHasBeenWon = winningCombinations.length > 0;
-  const gameHasBeenDrawn =
-    !gameHasBeenWon && squares.every((square) => square.isOccupied);
+  const gameHasBeenDrawn = !gameHasBeenWon && squares.every((square) => square.isOccupied);
   const gameHasNotEnded = !gameHasBeenWon && !gameHasBeenDrawn;
 
   const indexOfWinningSquare = winningCombinations[0]?.[0];
@@ -41,14 +52,14 @@ const checkGameResult = (squares: BoardSquare[]) => {
     winningCombinations,
     iconOfWinner,
   };
-};
+}
 
-const useTicTacToe: UseTicTacToe = () => {
+export default function useTicTacToe(): TicTacToe {
   const boardManager = useBoardManager();
   const playersManager = usePlayersManager();
   const gameManager = useGameManager();
 
-  const handleMove = useCallback<TicTacToe["handlers"]["handleMove"]>(
+  const handleMove = useCallback<HandleMove>(
     (index, player) => {
       if (gameManager.gameHasFinished) {
         return;
@@ -66,33 +77,16 @@ const useTicTacToe: UseTicTacToe = () => {
       boardManager.setSquareAsOccupied,
       gameManager.gameHasFinished,
       gameManager.incrementCurrentMoveIndex,
-    ]
+    ],
   );
 
-  const handleStart = useCallback<TicTacToe["handlers"]["handleStart"]>(
+  const handleStart = useCallback<HandleStart>(
     (data) => {
-      const playersData = [
-        { icon: data.player1Icon, name: data.player1Name },
-        { icon: data.player2Icon, name: data.player2Name },
-      ].map((player, i) => {
-        /**
-         * TODO: The responsibility for adding score and index should be usePlayersManager's,
-         * not the caller's.
-         */
-        return {
-          ...player,
-          score: 0,
-          index: playersManager.players.length + i,
-        };
-      });
-      playersData.forEach(playersManager.addPlayer);
+      playersManager.addPlayer.call(undefined, { icon: data.player1Icon, name: data.player1Name });
+      playersManager.addPlayer.call(undefined, { icon: data.player2Icon, name: data.player2Name });
       gameManager.setGameAsStarted.call(undefined);
     },
-    [
-      playersManager.players.length,
-      playersManager.addPlayer,
-      gameManager.setGameAsStarted,
-    ]
+    [playersManager.addPlayer, gameManager.setGameAsStarted],
   );
 
   const handleRestart = useCallback(() => {
@@ -101,6 +95,9 @@ const useTicTacToe: UseTicTacToe = () => {
   }, [boardManager.resetBoard, gameManager.resetGame]);
 
   /**
+   * @todo This can probably be simplified with computed/derived state and without `useEffect`.
+   * Just need to think through what genuinely needs to be reactive/state.
+   *
    * After each move, check if game has been won/drawn or should continue.
    */
   useEffect(() => {
@@ -123,16 +120,11 @@ const useTicTacToe: UseTicTacToe = () => {
     }
 
     if (result.gameHasBeenWon) {
-      const winner = playersManager.players.find(
-        (player) => player.icon === result.iconOfWinner
-      )!;
+      const winner = playersManager.players.find((player) => player.icon === result.iconOfWinner)!;
 
       gameManager.setGameAsFinished.call(undefined);
       gameManager.setGameWinner.call(undefined, winner);
-      boardManager.setSquaresAsWinning.call(
-        undefined,
-        result.winningCombinations
-      );
+      boardManager.setSquaresAsWinning.call(undefined, result.winningCombinations);
       playersManager.incrementPlayerScore.call(undefined, winner.index);
     }
   }, [
@@ -168,6 +160,4 @@ const useTicTacToe: UseTicTacToe = () => {
       handleRestart,
     },
   };
-};
-
-export default useTicTacToe;
+}
