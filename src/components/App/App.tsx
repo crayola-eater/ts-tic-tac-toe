@@ -2,7 +2,7 @@ import useTicTacToe from '../../hooks/useTicTacToe';
 import Board from '../Board/Board';
 import ResponsiveWrapper from '../ResponsiveWrapper/ResponsiveWrapper';
 import Score from '../Score/Score';
-import StartMenu from '../StartMenu';
+import StartMenu from '../StartMenu/StartMenu';
 import Status from '../Status/Status';
 
 export default function App() {
