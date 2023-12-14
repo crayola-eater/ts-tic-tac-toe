@@ -1,35 +1,40 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback } from 'react';
+import type { Player } from './usePlayersManager';
 
-import { GameManager, UseGameManager } from "../types/useGameManager";
+export type GameManager = {
+  gameHasStarted: boolean;
+  gameHasFinished: boolean;
+  winner: Player | null;
+  currentMoveIndex: number;
+  setGameAsStarted: () => void;
+  setGameAsFinished: () => void;
+  incrementCurrentMoveIndex: () => void;
+  setGameWinner: (winner: Player) => void;
+  resetGame: () => void;
+};
+export type Winner = GameManager['winner'];
+export type SetGameAsStarted = GameManager['setGameAsStarted'];
+export type SetGameAsFinished = GameManager['setGameAsFinished'];
+export type IncrementCurrentMoveIndex = GameManager['incrementCurrentMoveIndex'];
+export type SetGameWinner = GameManager['setGameWinner'];
+export type ResetGame = GameManager['resetGame'];
 
-const useGameManager: UseGameManager = () => {
+export default function useGameManager(): GameManager {
   const [started, setStarted] = useState(false);
   const [finished, setFinished] = useState(false);
   const [currentMoveIndex, setCurrentMoveIndex] = useState(0);
-  const [winner, setWinner] = useState<GameManager["winner"]>(null);
+  const [winner, setWinner] = useState<Winner>(null);
 
-  const setGameAsStarted = useCallback<GameManager["setGameAsStarted"]>(
-    () => setStarted(true),
-    [setStarted]
-  );
+  const setGameAsStarted = useCallback<SetGameAsStarted>(() => setStarted(true), []);
+  const setGameAsFinished = useCallback<SetGameAsFinished>(() => setFinished(true), []);
 
-  const setGameAsFinished = useCallback<GameManager["setGameAsFinished"]>(
-    () => setFinished(true),
-    [setFinished]
-  );
-
-  const incrementCurrentMoveIndex = useCallback<
-    GameManager["incrementCurrentMoveIndex"]
-  >(() => {
+  const incrementCurrentMoveIndex = useCallback<IncrementCurrentMoveIndex>(() => {
     setCurrentMoveIndex((prev) => prev + 1);
-  }, [setCurrentMoveIndex]);
+  }, []);
 
-  const setGameWinner = useCallback<GameManager["setGameWinner"]>(
-    (winner) => setWinner(winner),
-    [setWinner]
-  );
+  const setGameWinner = useCallback<SetGameWinner>((winner) => setWinner(winner), []);
 
-  const resetGame = useCallback<GameManager["resetGame"]>(() => {
+  const resetGame = useCallback<ResetGame>(() => {
     setStarted(true);
     setFinished(false);
     setWinner(null);
@@ -47,6 +52,4 @@ const useGameManager: UseGameManager = () => {
     setGameWinner,
     resetGame,
   };
-};
-
-export default useGameManager;
+}
