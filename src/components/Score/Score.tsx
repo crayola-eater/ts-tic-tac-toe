@@ -1,14 +1,10 @@
-import { Player } from '../../hooks/usePlayersManager';
+import { Player } from '../../useTicTacToe/types';
 
 type ScoreProps = {
-  players: Player[];
+  players: [Player, Player];
 };
 
 export default function Score({ players }: ScoreProps) {
-  if (0 === players?.length) {
-    return null;
-  }
-
   return (
     <div className="w-full shadow-md p-2 md:p-4 flex flex-col justify-center items-center bg-gray-200 rounded-lg space-y-2">
       <h1 className="w-full text-sm sm:text-lg md:text-xl text-center tracking-widest">Score</h1>
@@ -18,7 +14,7 @@ export default function Score({ players }: ScoreProps) {
             {players.map((player) => {
               return (
                 <th
-                  key={player.index}
+                  key={player.icon}
                   className="border border-solid border-gray-400 font-normal text-md"
                 >
                   {`${player.name} ${player.icon}`}
@@ -31,7 +27,7 @@ export default function Score({ players }: ScoreProps) {
           <tr>
             {players.map((player) => {
               return (
-                <td key={player.index} className="border border-solid border-gray-400 text-md">
+                <td key={player.icon} className="border border-solid border-gray-400 text-md">
                   {player.score}
                 </td>
               );

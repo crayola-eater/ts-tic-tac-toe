@@ -1,40 +1,40 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import Status, { type StatusProps } from './Status';
+import Status from './Status';
 
 describe('Status component', () => {
-  const testProps: StatusProps = {
-    gameHasFinished: true,
-    winner: { icon: '👹', name: 'Abe', index: 0, score: 45 },
-    currentPlayer: { icon: '🧙', name: 'Agatha', index: 0, score: 5 },
-  };
-
   it('should display an interim/temporary message', async () => {
-    render(<Status gameHasFinished={false} winner={null} currentPlayer={undefined} />);
+    render(<Status status="NOT_STARTED" winner={null} currentPlayer={null} />);
     const status = await screen.findByText('Getting ready, just a moment...');
     expect(status).toBeInTheDocument();
   });
 
-  it('should display whose turn it currently is', async () => {
-    const updatedProps = { ...testProps, gameHasFinished: false };
-    render(<Status {...updatedProps} />);
-    const { name, icon } = updatedProps.currentPlayer!;
-    const text = `Waiting for ${name} (${icon})...`;
-    const status = await screen.findByText(text);
+  it('should display whose turn it currently is when game is in progress', async () => {
+    render(
+      <Status
+        status="IN_PROGRESS"
+        winner={null}
+        currentPlayer={{ icon: '👾', name: 'Barbara', score: 3 }}
+      />,
+    );
+    const status = await screen.findByText('Waiting for Barbara (👾)...');
     expect(status).toBeInTheDocument();
   });
 
-  it('should display the winner', async () => {
-    render(<Status {...testProps} />);
-    const { name, icon } = testProps.winner!;
-    const text = `Game over, ${name} (${icon}) wins!`;
-    const status = await screen.findByText(text);
+  it('should display the winner when game has finished and there is a winner', async () => {
+    render(
+      <Status
+        status="FINISHED"
+        currentPlayer={null}
+        winner={{ icon: '🧟', name: 'Abe', score: 7 }}
+      />,
+    );
+    const status = await screen.findByText('Game over, Abe (🧟) wins!');
     expect(status).toBeInTheDocument();
   });
 
-  it('should not display a winner', async () => {
-    const updatedProps = { ...testProps, winner: null };
-    render(<Status {...updatedProps} />);
+  it('should not display a winner when game has finished and there is not a winner', async () => {
+    render(<Status status="FINISHED" currentPlayer={null} winner={null} />);
     const status = await screen.findByText('Game over, nobody won!');
     expect(status).toBeInTheDocument();
   });

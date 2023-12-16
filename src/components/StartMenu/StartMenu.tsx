@@ -1,7 +1,8 @@
 import { useForm } from 'react-hook-form';
+import { HandleStart, PlayerCreationOptions } from '../../useTicTacToe/types';
 
 export type StartMenuProps = {
-  handleStart: (data: StartMenuFormData) => void;
+  handleStart: HandleStart;
 };
 
 export type StartMenuFormData = {
@@ -37,18 +38,19 @@ const allIcons = (
 });
 
 export default function StartMenu({ handleStart }: StartMenuProps) {
-  const { register, handleSubmit } = useForm<StartMenuFormData>();
+  const { register, handleSubmit } = useForm<PlayerCreationOptions>();
 
   return (
     <>
       <h1 className="text-center text-3xl p-2 tracking-wider">Select your icon!</h1>
       <form
         className="flex flex-col justify-center items-center space-y-3 w-11/12 sm:w-96 tracking-wider"
-        onSubmit={handleSubmit(handleStart)}
+        onSubmit={handleSubmit((data) => {
+          const players: PlayerCreationOptions = [data[0], data[1]];
+          handleStart(players);
+        })}
       >
-        {Array.from({ length: 2 }, (_, i) => {
-          const nameId = i === 0 ? 'player1Name' : 'player2Name';
-          const iconId = i === 0 ? 'player1Icon' : 'player2Icon';
+        {([0, 1] as const).map((i) => {
           return (
             <fieldset
               className="w-full flex flex-col justify-center items-center rounded-lg bg-gray-200 p-4 space-y-3"
@@ -57,31 +59,25 @@ export default function StartMenu({ handleStart }: StartMenuProps) {
               <span className="w-full text-lg border-b border-solid border-gray-400 pb-1">{`Player ${
                 i + 1
               }`}</span>
-              <label
-                className="w-full flex flex-col justify-center items-center space-y-1"
-                htmlFor={nameId}
-              >
+              <label className="w-full flex flex-col justify-center items-center space-y-1">
                 <span className="w-full text-gray-600 text-xs">{`Player ${i + 1} name:`}</span>
                 <input
                   className="w-full rounded-sm p-1"
-                  {...register(nameId, {
+                  {...register(`${i}.name`, {
                     required: 'Please enter a name',
                     pattern: /\S+/,
                   })}
                   type="text"
                   placeholder="Enter name..."
+                  maxLength={10}
                   defaultValue={`Player ${i + 1}`}
                 />
               </label>
-              <label
-                className="w-full flex flex-col justify-center items-center space-y-1"
-                htmlFor={iconId}
-              >
+              <label className="w-full flex flex-col justify-center items-center space-y-1">
                 <span className="w-full text-gray-600 text-xs">{`Player ${i + 1} icon:`}</span>
                 <select
                   className="w-full rounded-sm p-1"
-                  id={iconId}
-                  {...register(iconId, {
+                  {...register(`${i}.icon`, {
                     required: true,
                   })}
                   defaultValue={allIcons[i].icon}
