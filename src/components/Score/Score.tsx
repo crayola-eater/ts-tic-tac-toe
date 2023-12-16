@@ -6,9 +6,9 @@ type ScoreProps = {
 
 export default function Score({ players }: ScoreProps) {
   return (
-    <div className="w-full shadow-md p-2 md:p-4 flex flex-col justify-center items-center bg-gray-200 rounded-lg space-y-2">
+    <section className="w-full shadow-md p-2 md:p-4 flex flex-col justify-center items-center bg-gray-200 rounded-lg space-y-2">
       <h1 className="w-full text-sm sm:text-lg md:text-xl text-center tracking-widest">Score</h1>
-      <table className="w-full border-collapse text-center bg-white">
+      <table className="w-full border-collapse text-center bg-white" aria-label="Scores">
         <thead>
           <tr>
             {players.map((player) => {
@@ -27,7 +27,11 @@ export default function Score({ players }: ScoreProps) {
           <tr>
             {players.map((player) => {
               return (
-                <td key={player.icon} className="border border-solid border-gray-400 text-md">
+                <td
+                  key={player.icon}
+                  className="border border-solid border-gray-400 text-md"
+                  aria-label={`Score for player ${player.name} (${player.icon})`}
+                >
                   {player.score}
                 </td>
               );
@@ -35,6 +39,6 @@ export default function Score({ players }: ScoreProps) {
           </tr>
         </tbody>
       </table>
-    </div>
+    </section>
   );
 }
