@@ -1,37 +1,38 @@
 import clsx from 'clsx';
-import type { Winner } from '../../hooks/useGameManager';
-import type { Player } from '../../hooks/usePlayersManager';
+import type { Player, GameStatus } from '../../useTicTacToe/types';
 
 export type StatusProps = {
-  gameHasFinished: boolean;
-  winner: Winner;
-  currentPlayer?: Player;
+  status: GameStatus;
+  winner: null | Player;
+  currentPlayer: null | Player;
 };
 
-export default function Status({ currentPlayer, gameHasFinished, winner }: StatusProps) {
-  let statusMessage;
-  if (gameHasFinished) {
-    statusMessage = winner
-      ? `Game over, ${winner.name} (${winner.icon}) wins!`
-      : 'Game over, nobody won!';
+function createStatusMessage({ winner, status, currentPlayer }: StatusProps) {
+  if (status === 'FINISHED') {
+    return winner ? `Game over, ${winner.name} (${winner.icon}) wins!` : 'Game over, nobody won!';
   } else if (currentPlayer) {
-    statusMessage = `Waiting for ${currentPlayer.name} (${currentPlayer.icon})...`;
+    return `Waiting for ${currentPlayer.name} (${currentPlayer.icon})...`;
   } else {
-    statusMessage = 'Getting ready, just a moment...';
+    return 'Getting ready, just a moment...';
   }
+}
+
+export default function Status(props: StatusProps) {
+  const statusMessage = createStatusMessage(props);
 
   return (
     <div
       className={clsx(
-        'w-full',
         'flex flex-col items-center justify-center',
         'bg-gray-200',
         'rounded-lg',
+        'w-48 sm:w-72 md:w-96',
       )}
     >
       <span
         className={clsx(
           'p-2 md:p-4',
+          'min-w-95',
           'font-sans',
           'text-center',
           'text-sm sm:text-lg md:text-xl',
