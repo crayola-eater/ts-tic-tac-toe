@@ -22,13 +22,17 @@ export default function BoardSquare({ square, handleClick, status }: BoardSquare
     },
   );
 
+  const label = square.isOccupied
+    ? `Square ${square.position + 1} has already been picked by ${square.occupiedBy}`
+    : `Select square ${square.position + 1}`;
+
   return (
     <button
       className={className}
       onClick={status === 'IN_PROGRESS' && !square.isOccupied ? handleClick : undefined}
-      disabled={status === 'FINISHED'}
+      disabled={status === 'FINISHED' || square.isOccupied}
+      aria-label={label}
     >
-      <h1 className="bg"></h1>
       <span
         className={clsx('text-3xl md:text-4xl lg:text-5xl', {
           ['animate-bounce']: square.isWinning,
