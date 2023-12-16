@@ -1,25 +1,35 @@
 import BoardSquare from '../BoardSquare/BoardSquare';
-import type { Board } from '../../hooks/useBoardManager';
-import type { HandleMove } from '../../hooks/useTicTacToe';
-import type { Player } from '../../hooks/usePlayersManager';
+import type {
+  GameStatus,
+  HandleMove,
+  BoardSquare as Square,
+  Player,
+} from '../../useTicTacToe/types';
 
 export type BoardProps = {
-  board: Board;
+  board: Square[];
   handleMove: HandleMove;
-  gameHasFinished: boolean;
-  currentPlayer: Player;
+  status: GameStatus;
+  currentPlayer: Player | null;
 };
 
-export default function Board({ board, handleMove, gameHasFinished, currentPlayer }: BoardProps) {
+export default function Board({ board, handleMove, status, currentPlayer }: BoardProps) {
   return (
-    <div className="grid grid-cols-3 grid-rows-3 gap-1 h-48 w-48 sm:h-72 sm:w-72 md:h-96 md:w-96">
+    <div className="grid grid-cols-3 grid-rows-3 gap-1 h-48 w-48 sm:h-72 sm:w-72 md:h-96 md:w-96 aspect-square">
       {board.map((square) => {
         return (
           <BoardSquare
             key={square.position}
             square={square}
-            gameHasFinished={gameHasFinished}
-            handleClick={() => handleMove(square.position, currentPlayer)}
+            status={status}
+            handleClick={() => {
+              if (currentPlayer) {
+                handleMove({
+                  playerIcon: currentPlayer.icon,
+                  squarePosition: square.position,
+                });
+              }
+            }}
           />
         );
       })}
